@@ -28,3 +28,8 @@ CS296 Project
 	2)  week 7~10 server code and socket code
 	4)  week 11 features and utilities implementation
 	5)  week 12~13 frontend and backend connection
+
+-links
+	https://notes.shichao.io/gopl/ch8/
+	https://www.geeksforgeeks.org/socket-programming-cc/
+	https://mittaltutorials.wordpress.com/2016/01/03/exp2-vector-clock/
