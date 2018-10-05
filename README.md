@@ -30,6 +30,16 @@ CS296 Project
 	5)  week 12~13 frontend and backend connection
 
 -links
-	https://notes.shichao.io/gopl/ch8/
-	https://www.geeksforgeeks.org/socket-programming-cc/
-	https://mittaltutorials.wordpress.com/2016/01/03/exp2-vector-clock/
+	Go:
+		https://notes.shichao.io/gopl/ch8/
+		https://medium.com/@mycoralhealth/code-a-simple-p2p-blockchain-in-go-46662601f417
+	Socket:
+		https://www.geeksforgeeks.org/socket-programming-cc/
+		https://docs.microsoft.com/en-us/windows/desktop/WinSock/getting-started-with-winsock
+		https://stackoverflow.com/questions/2843277/c-winsock-p2p
+	Vector Clock:
+	       https://mittaltutorials.wordpress.com/2016/01/03/exp2-vector-clock/
+	P2P:
+		https://www.rti.com/blog/2014/08/01/create-a-p2p-distributed-application-in-under-35-lines-of-c11-code/
+		http://cs.berry.edu/~nhamid/p2p/
+		https://github.com/peerborough/peerapi
