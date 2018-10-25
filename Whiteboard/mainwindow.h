@@ -6,6 +6,7 @@
 #include <QtCore>
 #include <QPen>
 #include <QMouseEvent>
+#include <iostream>
 
 namespace Ui {
 class MainWindow;
@@ -24,24 +25,24 @@ private:
     Ui::MainWindow *ui;
 
 protected:
-    void paintEvent(QPaintEvent *event);
-    //void mouseMoveEvent(QMouseEvent *event);
+    void paintEvent(QMouseEvent *event);
     void mousePressedEvent(QMouseEvent *event);
     void mouseReleasedEvent(QMouseEvent *event);
-    //void setStart();
-    //void setEnd();
+    void paint(QPaintEvent *event);
     int x,y;
     QPoint start;
     QPoint end;
+    bool pressed = false;
 
 public slots:
     void setStart();
     void setEnd();
 
+
 signals:
-    bool mouse_pressed();
+    void mouse_pressed();
     void mouse_pos();
-    bool mouse_released();
+    void mouse_released();
 
 };
 
