@@ -21,6 +21,13 @@
 
 #include <list>
 #include <SDL2/SDL.h>
+<<<<<<< HEAD
+=======
+#include <iostream>
+#include <fstream>
+#include <string>
+#include <vector>
+>>>>>>> 8e167df182e0fe86e666d2b2248b066c57378e75
 using namespace std;
 
 struct Line
@@ -43,6 +50,13 @@ int main(int argc, char ** argv)
     int y2 = 0;
     bool drawing = false;
     std::list<Line> lines;
+<<<<<<< HEAD
+=======
+    std::string line_data;
+    vector<string> data_container;
+    ofstream outfile;
+    
+>>>>>>> 8e167df182e0fe86e666d2b2248b066c57378e75
     
     // init SDL
     
@@ -55,7 +69,11 @@ int main(int argc, char ** argv)
     
     while (!quit)
     {
+<<<<<<< HEAD
         SDL_Delay(10);
+=======
+        SDL_Delay(1);
+>>>>>>> 8e167df182e0fe86e666d2b2248b066c57378e75
         SDL_PollEvent(&event);
         
         switch (event.type)
@@ -109,6 +127,11 @@ int main(int argc, char ** argv)
             SDL_RenderDrawLine(renderer, line.x1, line.y1, line.x2, line.y2);
         }
         
+<<<<<<< HEAD
+=======
+        
+        
+>>>>>>> 8e167df182e0fe86e666d2b2248b066c57378e75
         // draw current line
         
         SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
@@ -120,6 +143,37 @@ int main(int argc, char ** argv)
         SDL_RenderPresent(renderer);
     }
     
+<<<<<<< HEAD
+=======
+    // save the different line data to data container
+    //int count = 1;
+    for (std::list<Line>::const_iterator i = lines.begin(); i != lines.end(); ++i) {
+        Line line = *i;
+        //auto index = std::to_string(count);
+        auto x1_cor = to_string(line.x1) + " ";
+        auto y1_cor = to_string(line.y1) + " ";
+        auto x2_cor = to_string(line.x2) + " ";
+        auto y2_cor = to_string(line.y2) + " \n";
+        line_data = "line: " + x1_cor + y1_cor + x2_cor + y2_cor;
+        if (data_container.empty()) {
+            data_container.push_back(line_data);
+        } else {
+            if (line_data.compare(data_container.back()) != 0) {
+                data_container.push_back(line_data);
+            }
+        }
+        //count++;
+    }
+    
+    // adding line data to the file
+    outfile.open("test.txt");
+    for (int i = 0; i < data_container.size(); i++) {
+        
+        outfile << data_container[i];
+    }
+    outfile.close();
+    
+>>>>>>> 8e167df182e0fe86e666d2b2248b066c57378e75
     // cleanup SDL
     
     SDL_DestroyRenderer(renderer);

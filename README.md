@@ -30,6 +30,7 @@ ots of time to update all of the value)
 
 
 -timeline
+<<<<<<< HEAD
         1)  week 5~7 client (window using ncurses)
         2)  week 7~10 server code and socket code
         4)  week 11 features and utilities implementation
@@ -52,3 +53,12 @@ ots of time to update all of the value)
 		https://www.rti.com/blog/2014/08/01/create-a-p2p-distributed-application-in-under-35-lines-of-c11-code/
 		http://cs.berry.edu/~nhamid/p2p/
 		https://github.com/peerborough/peerapi
+=======
+	1)  week 5~7 client (window using ncurses)
+	2)  week 7~10 server code and socket code
+	4)  week 11 features and utilities implementation
+	5)  week 12~13 frontend and backend connection
+
+
+<!-- for branch test purpose -->
+>>>>>>> 8e167df182e0fe86e666d2b2248b066c57378e75
