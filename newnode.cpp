@@ -59,6 +59,7 @@ void external(int argc, char *argv[]){
         perror("socket failed");
         exit(0);
     }
+//cout<<"serversd"<<serverSd<<endl;
     if( setsockopt(serverSd, SOL_SOCKET, SO_REUSEADDR, (char *)&opt,  sizeof(opt)) < 0 )
     {
         perror("setsockopt");
@@ -192,19 +193,57 @@ void external(int argc, char *argv[]){
             //       \n" , new_socket , inet_ntoa(servAddr.sin_addr) , ntohs
             //       (servAddr.sin_port));
             
-            if(send(new_socket, msg, strlen(msg), 0) != strlen(msg))
-            {
-                perror("send");
-            }
+            // if(send(new_socket, msg, strlen(msg), 0) != strlen(msg))
+            // {
+            //     perror("send");
+            // }
+
             //add new socket to array of sockets
+            int newclientindex = 0;
             for (int i = 0; i < max_clients; i++)
             {
                 if( client_socket[i] == 0 )
                 {
                     client_socket[i] = new_socket;
+ //cout<<"newsocketsd"<<new_socket<<endl;
                     cout<<"Server Adding to list of sockets as "<< i <<endl;
+                    newclientindex = i;
                     break;
                 }
+            }
+
+            //snapshot
+            int sendnode = 0;
+            for(int j = 0; j < max_clients; j++){
+            	if(client_socket[j] != 0){
+            		sendnode = j;
+  //cout<<"find sendnode"<<sendnode<<endl;
+            		break;
+            	}
+            }
+   //cout<<"serversd"<<serverSd<<endl;
+   //cout<<"clientsocket"<<client_socket[sendnode]<<endl;
+            if(serverSd == client_socket[sendnode]-1){
+ //cout<<"in here"<<endl;
+ 				if(!outmsgqueue.empty()){
+ //cout<<"in send"<<endl;
+	            	 char msgtemp[1025];
+	            	memset(&msgtemp, 0, sizeof(msgtemp));
+	            	// strcpy(msgtemp, outmsgqueue.at(0).c_str());
+	            	// send(client_socket[newclientindex], (char*)&msgtemp, strlen(msgtemp), 0);
+
+//cout<<"inqueuesize"<<outmsgqueue.size()<<endl;
+	        for(int i = 0; i < outmsgqueue.size(); i++){
+	//cout<<"in loop"<<endl;
+		    	memset(&msgtemp, 0, sizeof(msgtemp));
+	        	strcpy(msgtemp, outmsgqueue.at(i).c_str());
+	//cout<<"inmsgqueuesize: "<<inmsgqueue.size()<<endl;
+	        	//cout<<"client: "<<msg<<endl;
+	        	//inqueueindex++;
+	//cout<<"int here"<<endl;
+	        	send(client_socket[newclientindex], (char*)&msgtemp, strlen(msgtemp), 0);
+		    }
+	            }
             }
         }
 //cout<<"wtf"<<endl;
@@ -299,7 +338,7 @@ void external(int argc, char *argv[]){
 
 
 void networking(int argc, char *argv[]){
-cout<<"in here"<<endl;
+//cout<<"in here"<<endl;
 // cout<<argc<<endl;
 // cout<<argv[0]<<endl;
 // cout<<argv[1]<<endl;
