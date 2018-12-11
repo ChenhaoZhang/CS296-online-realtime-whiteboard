@@ -42,13 +42,13 @@ void external(int argc, char *argv[]){
     char msg[1025];
     int serverSd;
 //cout<<"in here"<<endl;
-            
+
     sockaddr_in servAddr;
     bzero((char*)&servAddr, sizeof(servAddr));
     servAddr.sin_family = AF_INET;
     servAddr.sin_addr.s_addr = htonl(INADDR_ANY);
     servAddr.sin_port = htons(port);
-    
+
     fd_set readfds;
 
     for (int i = 0; i < max_clients; i++)
@@ -65,9 +65,9 @@ void external(int argc, char *argv[]){
         perror("setsockopt");
         exit(0);
     }
-    
+
     int bindStatus = ::bind(serverSd, (struct sockaddr*) &servAddr, sizeof(servAddr));
-    
+
     if( bindStatus < 0 )
     {
         cerr << "Error binding socket to local address" << endl;
@@ -78,26 +78,26 @@ void external(int argc, char *argv[]){
         perror("listen");
         exit(0);
     };
-    
+
     int addrlen = sizeof(servAddr);
     int max_sd = 0;
     int sd;
     int activity;
     int new_socket;
-    
+
     sockaddr_in newSockAddr;
     socklen_t newSockAddrSize = sizeof(newSockAddr);
 
 //cout<<"in there"<<endl;
 //connect to exist socket
-    char *serverIp = argv[1]; 
-    //int port = atoi(argv[2]); 
+    char *serverIp = argv[1];
+    //int port = atoi(argv[2]);
     int ex_port = 0;
-    //char msg[1500]; 
-    struct hostent* host = gethostbyname(serverIp); 
-    sockaddr_in sendSockAddr;   
-    bzero((char*)&sendSockAddr, sizeof(sendSockAddr)); 
-    sendSockAddr.sin_family = AF_INET; 
+    //char msg[1500];
+    struct hostent* host = gethostbyname(serverIp);
+    sockaddr_in sendSockAddr;
+    bzero((char*)&sendSockAddr, sizeof(sendSockAddr));
+    sendSockAddr.sin_family = AF_INET;
     sendSockAddr.sin_addr.s_addr = inet_addr(inet_ntoa(*(struct in_addr*)*host->h_addr_list));
     //sendSockAddr.sin_port = htons(port);
     //int clientSd = socket(AF_INET, SOCK_STREAM, 0);
@@ -140,7 +140,7 @@ void external(int argc, char *argv[]){
  	// for(auto& thread : networkingthreads){
   //       thread.join();
   //   }
-    	
+
 
 
 
@@ -192,7 +192,7 @@ void external(int argc, char *argv[]){
             // printf("New connection , socket fd is %d , ip is : %s , port : %d
             //       \n" , new_socket , inet_ntoa(servAddr.sin_addr) , ntohs
             //       (servAddr.sin_port));
-            
+
             // if(send(new_socket, msg, strlen(msg), 0) != strlen(msg))
             // {
             //     perror("send");
@@ -259,7 +259,7 @@ void external(int argc, char *argv[]){
                                 (socklen_t*)&addrlen);
                     printf("Host disconnected , ip %s , port %d \n" ,
                            inet_ntoa(servAddr.sin_addr) , ntohs(servAddr.sin_port));
-                    
+
                     close(sd);
                     client_socket[i] = 0;
                 }
@@ -291,7 +291,7 @@ void external(int argc, char *argv[]){
 //         		if (FD_ISSET(sd , &readfds)){
 // cout<<"inin"<<endl;
 // 	        		send(sd, (char*)&msg, strlen(msg), 0);
-// cout<<"notstuck"<<endl;	        		
+// cout<<"notstuck"<<endl;
 // 	        	}
 //         	}
 //         	outqueueindex++;
@@ -312,7 +312,7 @@ void external(int argc, char *argv[]){
 // 		//nodeFd = 0;
 // char msg[1025];
 // int sd;
-// 	while(1){        
+// 	while(1){
 // 		for(int i = outqueueindex; i < outmsgqueue.size(); i++){
 // 	cout<<"get data"<<endl;
 // 	        	//may optimize here
@@ -326,7 +326,7 @@ void external(int argc, char *argv[]){
 // 	        		if (sd > 0){
 // 	cout<<"inin"<<endl;
 // 		        		send(sd, (char*)&msg, strlen(msg), 0);
-// 	cout<<"notstuck"<<endl;	        		
+// 	cout<<"notstuck"<<endl;
 // 		        	}
 // 	        	}
 // 	        	outqueueindex++;
@@ -362,7 +362,7 @@ void networking(int argc, char *argv[]){
 
 char msg[1025];
 int sd;
-	while(1){        
+	while(1){
 		for(int i = outqueueindex; i < outmsgqueue.size(); i++){
 	//cout<<"get data"<<endl;
 	        	//may optimize here
@@ -376,7 +376,7 @@ int sd;
 	        		if (sd > 0){
 	//cout<<"inin"<<endl;
 		        		send(sd, (char*)&msg, strlen(msg), 0);
-	//cout<<"notstuck"<<endl;	        		
+	//cout<<"notstuck"<<endl;
 		        	}
 	        	}
 	        	outqueueindex++;
@@ -386,13 +386,13 @@ int sd;
 
 
     t6.join();
- 	
+
 }
 
 void getdata(){
 
 
-	//char inputdata[1500]; 
+	//char inputdata[1500];
 
 
 	while(1){
@@ -464,6 +464,6 @@ int main(int argc, char *argv[]){
 
     return 0;
 
-            
+
 
 }

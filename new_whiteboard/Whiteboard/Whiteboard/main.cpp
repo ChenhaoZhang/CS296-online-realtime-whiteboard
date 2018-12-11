@@ -40,6 +40,13 @@
 #include <fcntl.h>
 #include <errno.h>
 #include <tuple>
+#include <sys/mman.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <sys/mman.h>
+#include <sys/types.h>
+#include <sys/wait.h>
+#include <unistd.h>
 using namespace std;
 
 #define WINDOW_HEIGHT 400
@@ -53,31 +60,49 @@ struct Line
     int y2;
 };
 
+static vector<tuple<int, int>> data_container;
+//static int *data_container2;
+
+
 int main(int argc, char ** argv)
 {
+    
+//    data_container = mmap(NULL, sizeof(data_container), PROT_READ | PROT_WRITE,
+//                    MAP_SHARED | MAP_ANONYMOUS, -1, 0);
+    
     // variables
     
-//    bool quit = false;
-//    SDL_Event event;
-//    int x1 = 0;
-//    int y1 = 0;
-//    int x2 = 0;
-//    int y2 = 0;
-//    bool drawing = false;
+    //    bool quit = false;
+    //    SDL_Event event;
+    //    int x1 = 0;
+    //    int y1 = 0;
+    //    int x2 = 0;
+    //    int y2 = 0;
+    //    bool drawing = false;
     std::list<Line> lines;
     std::string line_data;
-    vector<tuple<int, int>> data_container;
+    
     
     bool leftMouseButtonDown = false;
     bool quit = false;
     SDL_Event event;
+    pid_t test_pid = fork();
+    if (test_pid == 0) {
+        for (int i = 0; i < data_container.size(); i++) {
+            string x_cor = to_string(get<0>(data_container[i]));
+            string y_cor = to_string(get<1>(data_container[i]));
+            cout << "x_cor is " + x_cor + ", y_cor is " + y_cor + "\n";
+        }
+        
+    } else if (test_pid > 0) {
+        
     
     pid_t overall_pid = fork();
     // back end code
     
     if (overall_pid == 0) {
         // child, back end
-       
+        
         pid_t pid = fork();
         
         //.  ip serverport clientconnect port
@@ -265,17 +290,17 @@ int main(int argc, char ** argv)
             gettimeofday(&start1, NULL);
             while(1)
             {
-                cout << ">";
-                string data;
-                getline(cin, data);
-                memset(&msg, 0, sizeof(msg));
-                strcpy(msg, data.c_str());
-                if(data == "exit")
-                {
-                    send(clientSd, (char*)&msg, strlen(msg), 0);
-                    break;
+                int read_index = 0;
+                if(read_index < data_container.size()){
+                    tuple <int, int> currpoint = data_container[read_index];
+                    read_index++;
+                    memset(&msg, 0, sizeof(msg));
+                    string data_x = to_string(get<0>(currpoint));
+                    string data_y = to_string(get<1>(currpoint));
+                    string x_y = data_x + data_y;
+                    strcpy(msg, x_y.c_str());
+                    bytesWritten += send(clientSd, (char*)&msg, strlen(msg), 0);
                 }
-                bytesWritten += send(clientSd, (char*)&msg, strlen(msg), 0);
                 //cout << "Awaiting server response..." << endl;
                 //memset(&msg, 0, sizeof(msg));
                 //bytesRead += recv(clientSd, (char*)&msg, sizeof(msg), 0);
@@ -308,10 +333,10 @@ int main(int argc, char ** argv)
         
     }
     /* end of back end code
-    
--------------------------------------------------------------------------------------------------------------------
-    
-    start of front end code */
+     
+     -------------------------------------------------------------------------------------------------------------------
+     
+     start of front end code */
     
     else if (overall_pid > 0) {
         
@@ -328,7 +353,9 @@ int main(int argc, char ** argv)
         Uint32 * pixels = new Uint32[WINDOW_WIDTH * WINDOW_HEIGHT];
         
         memset(pixels, 255, WINDOW_WIDTH * WINDOW_HEIGHT * sizeof(Uint32));
-        
+        //ofstream outfile;
+        //string filename = argv[4];
+        //outfile.open(filename);
         while (!quit)
         {
             SDL_UpdateTexture(texture, NULL, pixels, WINDOW_WIDTH * sizeof(Uint32));
@@ -355,9 +382,17 @@ int main(int argc, char ** argv)
                         pixels[mouseY * WINDOW_WIDTH + mouseX] = 0;
                         tuple<int, int> temp (mouseX, mouseY);
                         data_container.push_back(temp);
+
+//                            string data_x = to_string(mouseX);
+//                            string data_y = to_string(mouseY);
+//                            string x_y = data_x + data_y;
+//                        outfile << x_y;
+//                        cout<<x_y;
+                        
                     }
                     break;
             }
+            //outfile.close();
             
             
             SDL_RenderClear(renderer);
@@ -390,124 +425,124 @@ int main(int argc, char ** argv)
         
         // drawing lines
         /*
-        SDL_Init(SDL_INIT_VIDEO);
-        SDL_Window * window = SDL_CreateWindow("SDL2 line drawing",
-                                               SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, 640, 480, 0);
-        SDL_Renderer * renderer = SDL_CreateRenderer(window, -1, 0);
-        
-        // handle events
-        
-        while (!quit)
-        {
-            SDL_Delay(1);
-            SDL_PollEvent(&event);
-            
-            switch (event.type)
-            {
-                case SDL_QUIT:
-                    quit = true;
-                    break;
-                case SDL_MOUSEBUTTONDOWN:
-                    switch (event.button.button)
-                {
-                    case SDL_BUTTON_LEFT:
-                        x1 = event.motion.x;
-                        y1 = event.motion.y;
-                        x2 = event.motion.x;
-                        y2 = event.motion.y;
-                        drawing = true;
-                        break;
-                }
-                    break;
-                case SDL_MOUSEBUTTONUP:
-                    switch (event.button.button)
-                {
-                    case SDL_BUTTON_LEFT:
-                        drawing = false;
-                        Line line = { x1, y1, x2, y2 };
-                        lines.push_back(line);
-                        break;
-                }
-                    break;
-                case SDL_MOUSEMOTION:
-                    if (drawing)
-                    {
-                        x2 = event.motion.x;
-                        y2 = event.motion.y;
-                    }
-                    break;
-//                case SDL_USEREVENT:
-//                    cout << "user event created!!" + to_string(user_count);
-//                    user_count++;
-//                    break;
-            }
-            
-            // clear window
-            
-            SDL_SetRenderDrawColor(renderer, 242, 242, 242, 255);
-            SDL_RenderClear(renderer);
-            
-            // draw stored lines
-            
-            SDL_SetRenderDrawColor(renderer, 128, 128, 128, 255);
-            
-            for (std::list<Line>::const_iterator i = lines.begin(); i != lines.end(); ++i)
-            {
-                Line line = *i;
-                SDL_RenderDrawLine(renderer, line.x1, line.y1, line.x2, line.y2);
-            }
-            
-            
-            
-            // draw current line
-            
-            SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
-            if (drawing)
-                SDL_RenderDrawLine(renderer, x1, y1, x2, y2);
-            
-            // render window
-            
-            SDL_RenderPresent(renderer);
-        }
-        
-        // save the different line data to data container
-        //int count = 1;
-        for (std::list<Line>::const_iterator i = lines.begin(); i != lines.end(); ++i) {
-            Line line = *i;
-            //auto index = std::to_string(count);
-            auto x1_cor = to_string(line.x1) + " ";
-            auto y1_cor = to_string(line.y1) + " ";
-            auto x2_cor = to_string(line.x2) + " ";
-            auto y2_cor = to_string(line.y2) + " \n";
-            line_data = "line: " + x1_cor + y1_cor + x2_cor + y2_cor;
-            if (data_container.empty()) {
-                data_container.push_back(line_data);
-            } else {
-                if (line_data.compare(data_container.back()) != 0) {
-                    data_container.push_back(line_data);
-                }
-            }
-        }
-        
-        // adding line data to the file
-        outfile.open("test.txt");
-        for (int i = 0; i < data_container.size(); i++) {
-            
-            outfile << data_container[i];
-        }
-        outfile.close();
-        
-        // cleanup SDL
-        
-        SDL_DestroyRenderer(renderer);
-        SDL_DestroyWindow(window);
-        SDL_Quit();
-        
-        return 0;
-        */
+         SDL_Init(SDL_INIT_VIDEO);
+         SDL_Window * window = SDL_CreateWindow("SDL2 line drawing",
+         SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, 640, 480, 0);
+         SDL_Renderer * renderer = SDL_CreateRenderer(window, -1, 0);
+         
+         // handle events
+         
+         while (!quit)
+         {
+         SDL_Delay(1);
+         SDL_PollEvent(&event);
+         
+         switch (event.type)
+         {
+         case SDL_QUIT:
+         quit = true;
+         break;
+         case SDL_MOUSEBUTTONDOWN:
+         switch (event.button.button)
+         {
+         case SDL_BUTTON_LEFT:
+         x1 = event.motion.x;
+         y1 = event.motion.y;
+         x2 = event.motion.x;
+         y2 = event.motion.y;
+         drawing = true;
+         break;
+         }
+         break;
+         case SDL_MOUSEBUTTONUP:
+         switch (event.button.button)
+         {
+         case SDL_BUTTON_LEFT:
+         drawing = false;
+         Line line = { x1, y1, x2, y2 };
+         lines.push_back(line);
+         break;
+         }
+         break;
+         case SDL_MOUSEMOTION:
+         if (drawing)
+         {
+         x2 = event.motion.x;
+         y2 = event.motion.y;
+         }
+         break;
+         //                case SDL_USEREVENT:
+         //                    cout << "user event created!!" + to_string(user_count);
+         //                    user_count++;
+         //                    break;
+         }
+         
+         // clear window
+         
+         SDL_SetRenderDrawColor(renderer, 242, 242, 242, 255);
+         SDL_RenderClear(renderer);
+         
+         // draw stored lines
+         
+         SDL_SetRenderDrawColor(renderer, 128, 128, 128, 255);
+         
+         for (std::list<Line>::const_iterator i = lines.begin(); i != lines.end(); ++i)
+         {
+         Line line = *i;
+         SDL_RenderDrawLine(renderer, line.x1, line.y1, line.x2, line.y2);
+         }
+         
+         
+         
+         // draw current line
+         
+         SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
+         if (drawing)
+         SDL_RenderDrawLine(renderer, x1, y1, x2, y2);
+         
+         // render window
+         
+         SDL_RenderPresent(renderer);
+         }
+         
+         // save the different line data to data container
+         //int count = 1;
+         for (std::list<Line>::const_iterator i = lines.begin(); i != lines.end(); ++i) {
+         Line line = *i;
+         //auto index = std::to_string(count);
+         auto x1_cor = to_string(line.x1) + " ";
+         auto y1_cor = to_string(line.y1) + " ";
+         auto x2_cor = to_string(line.x2) + " ";
+         auto y2_cor = to_string(line.y2) + " \n";
+         line_data = "line: " + x1_cor + y1_cor + x2_cor + y2_cor;
+         if (data_container.empty()) {
+         data_container.push_back(line_data);
+         } else {
+         if (line_data.compare(data_container.back()) != 0) {
+         data_container.push_back(line_data);
+         }
+         }
+         }
+         
+         // adding line data to the file
+         outfile.open("test.txt");
+         for (int i = 0; i < data_container.size(); i++) {
+         
+         outfile << data_container[i];
+         }
+         outfile.close();
+         
+         // cleanup SDL
+         
+         SDL_DestroyRenderer(renderer);
+         SDL_DestroyWindow(window);
+         SDL_Quit();
+         
+         return 0;
+         */
         // end of drawing lines
     }
     return 0;
+    }
 }
-
 
